@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Múa Rối Nước · Water Puppetry</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Lora:ital,wght@0,400;0,500;1,400;1,500&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* =============================================
+     TOKENS
+  ============================================= */
+  :root {
+    --parchment:    #F2E8D5;
+    --parchment-dk: #E8D9BB;
+    --lacquer:      #8B1A1A;
+    --lacquer-lt:   #A52A2A;
+    --timber:       #5C3D1E;
+    --teal:         #2E6B6B;
+    --ink:          #1A1208;
+    --gold:         #C8922A;
+    --mist:         rgba(242,232,213,0.85);
+
+    --ff-display: 'Cormorant Garamond', Georgia, serif;
+    --ff-body:    'Lora', Georgia, serif;
+    --ff-ui:      'Be Vietnam Pro', system-ui, sans-serif;
+
+    --max-prose: 720px;
+    --max-wide:  1100px;
+  }
+
+  /* =============================================
+     RESET & BASE
+  ============================================= */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--parchment);
+    color: var(--timber);
+    font-family: var(--ff-body);
+    font-size: 18px;
+    line-height: 1.75;
+    overflow-x: hidden;
+  }
+
+  img { display: block; max-width: 100%; }
+
+  /* =============================================
+     LANGUAGE TOGGLE
+  ============================================= */
+  #lang-toggle {
+    position: fixed;
+    top: 1.25rem;
+    right: 1.5rem;
+    z-index: 9999;
+    display: flex;
+    gap: 0;
+    border: 1.5px solid var(--timber);
+    border-radius: 2px;
+    overflow: hidden;
+    font-family: var(--ff-ui);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  #lang-toggle button {
+    background: var(--parchment);
+    color: var(--timber);
+    border: none;
+    padding: 0.35rem 0.75rem;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  #lang-toggle button.active {
+    background: var(--timber);
+    color: var(--parchment);
+  }
+
+  /* =============================================
+     HERO
+  ============================================= */
+  #hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 4rem 2rem 6rem;
+    overflow: hidden;
+  }
+
+  #hero-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.18;
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    font-family: var(--ff-ui);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--lacquer);
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-title {
+    font-family: var(--ff-display);
+    font-size: clamp(3.2rem, 8vw, 7rem);
+    font-weight: 300;
+    line-height: 1.05;
+    color: var(--ink);
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.01em;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--lacquer);
+  }
+
+  .hero-subtitle {
+    font-family: var(--ff-display);
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--teal);
+    margin-bottom: 3rem;
+  }
+
+  .hero-desc {
+    max-width: 560px;
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--timber);
+    opacity: 0.85;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--ff-ui);
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--timber);
+    opacity: 0.5;
+    animation: bob 2s ease-in-out infinite;
+  }
+
+  .scroll-hint svg { width: 18px; height: 18px; }
+
+  @keyframes bob {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50%       { transform: translateX(-50%) translateY(6px); }
+  }
+
+  /* =============================================
+     NAV BAR (chapter index)
+  ============================================= */
+  #chapter-nav {
+    position: sticky;
+    top: 0;
+    z-index: 800;
+    background: var(--parchment);
+    border-bottom: 1px solid var(--parchment-dk);
+    padding: 0 2rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #chapter-nav ul {
+    display: flex;
+    gap: 0;
+    list-style: none;
+    max-width: var(--max-wide);
+    margin: 0 auto;
+  }
+
+  #chapter-nav a {
+    display: block;
+    padding: 0.85rem 1rem;
+    font-family: var(--ff-ui);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--timber);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  #chapter-nav a:hover,
+  #chapter-nav a.active {
+    color: var(--lacquer);
+    border-bottom-color: var(--lacquer);
+  }
+
+  /* =============================================
+     CHAPTER SECTIONS
+  ============================================= */
+  .chapter {
+    padding: 7rem 2rem;
+    border-bottom: 1px solid var(--parchment-dk);
+  }
+
+  .chapter:nth-child(even) {
+    background: rgba(92,61,30,0.03);
+  }
+
+  .chapter-inner {
+    max-width: var(--max-wide);
+    margin: 0 auto;
+  }
+
+  /* Chapter label */
+  .ch-label {
+    font-family: var(--ff-ui);
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--lacquer);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .ch-label::after {
+    content: '';
+    flex: 1;
+    max-width: 40px;
+    height: 1px;
+    background: var(--lacquer);
+    opacity: 0.4;
+  }
+
+  /* Chapter heading */
+  .ch-heading {
+    font-family: var(--ff-display);
+    font-size: clamp(2rem, 5vw, 3.8rem);
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--ink);
+    margin-bottom: 3rem;
+    max-width: 800px;
+    letter-spacing: -0.01em;
+  }
+
+  .ch-heading em {
+    font-style: italic;
+    color: var(--lacquer);
+  }
+
+  /* Body columns layout */
+  .ch-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem 5rem;
+    align-items: start;
+  }
+
+  .ch-body.single {
+    grid-template-columns: 1fr;
+    max-width: var(--max-prose);
+  }
+
+  .ch-prose p {
+    margin-bottom: 1.4em;
+    font-size: 1rem;
+  }
+
+  .ch-prose p:last-child { margin-bottom: 0; }
+
+  /* Pullquote */
+  .pullquote {
+    border-left: 3px solid var(--lacquer);
+    padding: 1rem 0 1rem 1.75rem;
+    margin: 2.5rem 0;
+    font-family: var(--ff-display);
+    font-size: clamp(1.1rem, 2.5vw, 1.45rem);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+
+  .pullquote cite {
+    display: block;
+    margin-top: 0.75rem;
+    font-family: var(--ff-ui);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--teal);
+    font-style: normal;
+  }
+
+  /* =============================================
+     MEDIA PLACEHOLDERS
+  ============================================= */
+  .media-placeholder {
+    background: var(--parchment-dk);
+    border: 1.5px dashed rgba(92,61,30,0.3);
+    border-radius: 3px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+  }
+
+  .media-placeholder svg {
+    width: 36px;
+    height: 36px;
+    opacity: 0.35;
+    color: var(--timber);
+  }
+
+  .media-placeholder .ph-type {
+    font-family: var(--ff-ui);
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--lacquer);
+  }
+
+  .media-placeholder .ph-desc {
+    font-family: var(--ff-ui);
+    font-size: 0.8rem;
+    color: var(--timber);
+    opacity: 0.6;
+    max-width: 260px;
+    line-height: 1.5;
+  }
+
+  .media-placeholder.scan { min-height: 360px; }
+  .media-placeholder.video { min-height: 260px; }
+  .media-placeholder.audio { min-height: 100px; flex-direction: row; gap: 1rem; padding: 1.2rem 1.5rem; }
+  .media-placeholder.photo-grid { min-height: 300px; }
+  .media-placeholder.photo-single { min-height: 400px; }
+
+  /* =============================================
+     TIMELINE (Chapter 2)
+  ============================================= */
+  .timeline {
+    position: relative;
+    padding: 2rem 0;
+    max-width: var(--max-wide);
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, var(--lacquer) 10%, var(--lacquer) 90%, transparent);
+    opacity: 0.3;
+  }
+
+  .tl-item {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 0 2.5rem;
+    padding: 1.5rem 0 1.5rem 1px;
+    position: relative;
+  }
+
+  .tl-item::before {
+    content: '';
+    position: absolute;
+    left: -4px;
+    top: 2.1rem;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--lacquer);
+    border: 2px solid var(--parchment);
+  }
+
+  .tl-year {
+    font-family: var(--ff-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--lacquer);
+    padding-top: 0.1rem;
+    line-height: 1.3;
+  }
+
+  .tl-text {
+    font-family: var(--ff-body);
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--timber);
+  }
+
+  .tl-text strong {
+    display: block;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 0.2rem;
+    font-size: 1rem;
+  }
+
+  /* =============================================
+     CRAFT PROCESS (Chapter 3)
+  ============================================= */
+  .process-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .process-step {
+    background: rgba(200,146,42,0.06);
+    border: 1px solid rgba(200,146,42,0.2);
+    border-radius: 2px;
+    padding: 1.5rem;
+  }
+
+  .step-num {
+    font-family: var(--ff-display);
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: var(--gold);
+    opacity: 0.6;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+
+  .step-title {
+    font-family: var(--ff-ui);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--timber);
+    margin-bottom: 0.5rem;
+  }
+
+  .step-desc {
+    font-size: 0.88rem;
+    line-height: 1.65;
+    color: var(--timber);
+    opacity: 0.8;
+  }
+
+  /* =============================================
+     ARTISAN PROFILES (Chapter 4)
+  ============================================= */
+  .artisan-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    margin-top: 3rem;
+  }
+
+  .artisan-card {
+    border-top: 2px solid var(--lacquer);
+    padding-top: 1.5rem;
+  }
+
+  .artisan-name {
+    font-family: var(--ff-display);
+    font-size: 1.6rem;
+    font-weight: 400;
+    color: var(--ink);
+    margin-bottom: 0.25rem;
+  }
+
+  .artisan-region {
+    font-family: var(--ff-ui);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 1rem;
+  }
+
+  .artisan-desc {
+    font-size: 0.95rem;
+    line-height: 1.75;
+    color: var(--timber);
+    margin-bottom: 1.5rem;
+  }
+
+  .artisan-quote {
+    background: rgba(46,107,107,0.06);
+    border-left: 2px solid var(--teal);
+    padding: 1rem 1.25rem;
+    font-family: var(--ff-display);
+    font-size: 1rem;
+    font-style: italic;
+    color: var(--ink);
+    line-height: 1.55;
+  }
+
+  /* placeholder for interview audio/transcript */
+  .artisan-media {
+    margin-top: 1.25rem;
+  }
+
+  /* =============================================
+     CLOSING
+  ============================================= */
+  #closing {
+    background: var(--ink);
+    color: var(--parchment);
+    padding: 8rem 2rem;
+    text-align: center;
+  }
+
+  .closing-inner {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  .closing-label {
+    font-family: var(--ff-ui);
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+    opacity: 0.8;
+  }
+
+  .closing-title {
+    font-family: var(--ff-display);
+    font-size: clamp(2.2rem, 5vw, 4rem);
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--parchment);
+    margin-bottom: 2.5rem;
+  }
+
+  .closing-title em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .closing-body {
+    font-family: var(--ff-body);
+    font-size: 1rem;
+    line-height: 1.9;
+    color: rgba(242,232,213,0.75);
+    margin-bottom: 2rem;
+  }
+
+  .stat-callout {
+    font-family: var(--ff-display);
+    font-size: clamp(1.1rem, 3vw, 1.5rem);
+    font-weight: 400;
+    color: var(--gold);
+    font-style: italic;
+    margin: 2.5rem 0;
+  }
+
+  .closing-final {
+    font-family: var(--ff-display);
+    font-size: 1.05rem;
+    font-style: italic;
+    color: rgba(242,232,213,0.5);
+    line-height: 1.8;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(242,232,213,0.12);
+  }
+
+  /* =============================================
+     DROPCAP
+  ============================================= */
+  .dropcap::first-letter {
+    float: left;
+    font-family: var(--ff-display);
+    font-size: 4.5rem;
+    font-weight: 600;
+    line-height: 0.82;
+    color: var(--lacquer);
+    margin-right: 0.1em;
+    margin-top: 0.06em;
+  }
+
+  /* =============================================
+     DIVIDER
+  ============================================= */
+  .ornament {
+    text-align: center;
+    margin: 3rem 0;
+    color: var(--lacquer);
+    opacity: 0.35;
+    font-size: 1.2rem;
+    letter-spacing: 0.5em;
+  }
+
+  /* =============================================
+     FOOTNOTE / LOCATION TAG
+  ============================================= */
+  .location-tag {
+    font-family: var(--ff-ui);
+    font-size: 0.68rem;
+    font-weight: 400;
+    color: var(--teal);
+    letter-spacing: 0.1em;
+    margin-top: 0.75rem;
+    opacity: 0.8;
+  }
+
+  /* =============================================
+     FADE-IN ON SCROLL
+  ============================================= */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* =============================================
+     LANGUAGE VISIBILITY
+  ============================================= */
+  [data-lang="en"] { display: none; }
+  body.lang-en [data-lang="vi"] { display: none; }
+  body.lang-en [data-lang="en"] { display: block; }
+  /* inline elements */
+  body.lang-en span[data-lang="vi"] { display: none; }
+  body.lang-en span[data-lang="en"] { display: inline; }
+  span[data-lang="en"] { display: none; }
+  /* nav links specifically */
+  #chapter-nav a[data-lang="en"] { display: none; }
+  body.lang-en #chapter-nav a[data-lang="vi"] { display: none; }
+  body.lang-en #chapter-nav a[data-lang="en"] { display: block; }
+
+  /* =============================================
+     RESPONSIVE
+  ============================================= */
+  @media (max-width: 800px) {
+    .ch-body { grid-template-columns: 1fr; gap: 2.5rem; }
+    .process-steps { grid-template-columns: 1fr 1fr; }
+    .artisan-grid { grid-template-columns: 1fr; }
+    .tl-item { grid-template-columns: 80px 1fr; gap: 0 1.5rem; }
+  }
+
+  @media (max-width: 520px) {
+    .process-steps { grid-template-columns: 1fr; }
+    #chapter-nav a { font-size: 0.6rem; padding: 0.75rem 0.75rem; }
+    .hero-title { font-size: 2.8rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { transition: none; opacity: 1; transform: none; }
+    .scroll-hint { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LANGUAGE TOGGLE -->
+<div id="lang-toggle" role="group" aria-label="Language selector">
+  <button id="btn-vi" class="active" onclick="setLang('vi')">VI</button>
+  <button id="btn-en" onclick="setLang('en')">EN</button>
+</div>
+
+<!-- =============================================
+     HERO
+============================================= -->
+<section id="hero">
+  <canvas id="hero-canvas" aria-hidden="true"></canvas>
+
+  <p class="hero-eyebrow">
+    <span data-lang="vi">Di sản phi vật thể · Đồng bằng sông Hồng</span>
+    <span data-lang="en">Intangible Heritage · Red River Delta</span>
+  </p>
+
+  <h1 class="hero-title">
+    <span data-lang="vi">Múa <em>Rối Nước</em></span>
+    <span data-lang="en">Water <em>Puppetry</em></span>
+  </h1>
+
+  <p class="hero-subtitle">
+    <span data-lang="vi">Khi mặt nước trở thành sân khấu</span>
+    <span data-lang="en">When Water Became a Stage</span>
+  </p>
+
+  <p class="hero-desc">
+    <span data-lang="vi">Một nghệ thuật hơn nghìn năm tuổi, sinh ra từ đồng ruộng Bắc Bộ và được lưu giữ bởi những người nông dân bình thường, những người chọn ngâm mình dưới nước lạnh mỗi đêm để giữ linh hồn làng tiếp tục sống.</span>
+    <span data-lang="en">An art over a thousand years old, born from the paddyfields of the Red River Delta and kept alive by ordinary farmers who chose, night after night, to stand waist-deep in cold water so that the soul of the village would not go quiet.</span>
+  </p>
+
+  <div class="scroll-hint" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+    <span data-lang="vi">Cuộn để khám phá</span>
+    <span data-lang="en">Scroll to explore</span>
+  </div>
+</section>
+
+<!-- =============================================
+     CHAPTER NAV
+============================================= -->
+<nav id="chapter-nav" aria-label="Chapter navigation">
+  <ul>
+    <li><a href="#ch1" data-lang="vi">I. Mặt nước</a><a href="#ch1" data-lang="en">I. The Water</a></li>
+    <li><a href="#ch2" data-lang="vi">II. Nghìn năm</a><a href="#ch2" data-lang="en">II. A Thousand Years</a></li>
+    <li><a href="#ch3" data-lang="vi">III. Con rối</a><a href="#ch3" data-lang="en">III. The Puppet</a></li>
+    <li><a href="#ch4" data-lang="vi">IV. Người giữ lửa</a><a href="#ch4" data-lang="en">IV. Keepers of the Flame</a></li>
+    <li><a href="#ch5" data-lang="vi">V. Thủy đình</a><a href="#ch5" data-lang="en">V. The Pavilion</a></li>
+    <li><a href="#ch6" data-lang="vi">VI. Sau bức rèm</a><a href="#ch6" data-lang="en">VI. Behind the Curtain</a></li>
+    <li><a href="#ch7" data-lang="vi">VII. Tiếng trống</a><a href="#ch7" data-lang="en">VII. The Drum</a></li>
+    <li><a href="#closing" data-lang="vi">Lời kết</a><a href="#closing" data-lang="en">Closing</a></li>
+  </ul>
+</nav>
+
+<!-- =============================================
+     CHAPTER 1
+============================================= -->
+<section class="chapter" id="ch1">
+  <div class="chapter-inner">
+    <p class="ch-label">
+      <span data-lang="vi">Chương một</span>
+      <span data-lang="en">Chapter One</span>
+    </p>
+    <h2 class="ch-heading reveal">
+      <span data-lang="vi">Khi mặt nước <em>trở thành sân khấu</em></span>
+      <span data-lang="en">When Water <em>Became a Stage</em></span>
+    </h2>
+
+    <div class="ch-body reveal">
+      <div class="ch-prose">
+        <p class="dropcap" data-lang="vi">Trong lịch sử các nền nghệ thuật thế giới, con người luôn tìm đến những bề mặt đặc biệt để biểu diễn: sân khấu gỗ, nền đất nện, vòm đá cổ đại. Người Việt chọn nước.</p>
+        <p data-lang="vi">Không phải vì thiếu đất. Mà vì nước là một phần của linh hồn người Việt, là đồng lúa ngập mùa, là con sông chảy qua từng ngôi làng, là nơi trẻ con lội bắt cá chiều hè. Khi người nông dân đồng bằng Bắc Bộ bắt đầu tạc những hình người bằng gỗ và thả xuống nước để diễn trò, họ không nghĩ đến nghệ thuật. Họ chỉ đang chơi, chơi bằng thứ thân thuộc nhất xung quanh mình.</p>
+        <p data-lang="vi">Và từ cái chơi ấy, một nghệ thuật độc nhất vô nhị trên thế giới ra đời.</p>
+
+        <p class="dropcap" data-lang="en">Across the history of the world's performing arts, people have always sought out remarkable surfaces on which to perform: wooden stages, packed-earth floors, ancient vaulted stone. The Vietnamese chose water.</p>
+        <p data-lang="en">Not for want of land. But because water is woven into the soul of the Vietnamese people, in the flooded paddyfields of the wet season, in the rivers threading through every village, in the summer afternoons when children wade out to catch fish. When the farmers of the Red River Delta first carved figures from wood and set them loose upon the water to perform, they were not thinking about art. They were simply playing, playing with what was most familiar and most near.</p>
+        <p data-lang="en">And from that play, an art form wholly unlike anything else in the world was born.</p>
+
+        <div class="pullquote reveal">
+          <span data-lang="vi">"Không phải chúng tôi dạy con rối bơi. Chúng tôi dạy mình biết nghe tiếng nước."</span>
+          <span data-lang="en">"We did not teach the puppets to swim. We taught ourselves to listen to the water."</span>
+        </div>
+
+        <p data-lang="vi">Mặt nước không chỉ là sàn diễn, nó là nhân vật. Nó phản chiếu ánh lửa của những con rồng phun lửa, nó ôm lấy những bước chân của cô tiên múa, nó cuộn sóng khi những chiếc thuyền đua lướt qua. Không một loại hình sân khấu nào trên thế giới có khả năng đó, biến bản thân thành một phần của vở diễn.</p>
+        <p data-lang="vi">Và ẩn sâu trong làn nước ấy, những người nghệ nhân đứng ngập nửa người, lạnh buốt đến tê cóng, tay giật từng sợi dây điều khiển mà không được phép run.</p>
+
+        <p data-lang="en">The water's surface is not merely a stage floor. It is a character in its own right. It mirrors the firelight of dragons breathing flame, it cradles the footsteps of fairies in mid-dance, it rises in waves as racing boats skim past. No other form of theatre in the world possesses this quality: the ability to make itself a participant in the performance.</p>
+        <p data-lang="en">And hidden beneath that surface, the artisans stand submerged to the waist, cold seeping into their bones, hands pulling each rod and wire with a steadiness they are not permitted to abandon.</p>
+      </div>
+
+      <div>
+        <div class="media-placeholder scan reveal" aria-label="3D scan placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.27 6.96 12 12.01l8.73-5.05M12 22.08V12"/></svg>
+          <p class="ph-type">3D Scan · Scaniverse</p>
+          <p class="ph-desc" data-lang="vi">Con rối Tễu, Phường Đào Thục · Xoay và khám phá từng nét chạm khắc, lớp sơn truyền thống và cơ chế điều khiển bên trong.</p>
+          <p class="ph-desc" data-lang="en">Tễu Puppet, Đào Thục Troupe · Rotate and explore every carved detail, each layer of traditional lacquer, and the internal control mechanism within.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================================
+     CHAPTER 2
+============================================= -->
+<section class="chapter" id="ch2">
+  <div class="chapter-inner">
+    <p class="ch-label">
+      <span data-lang="vi">Chương hai</span>
+      <span data-lang="en">Chapter Two</span>
+    </p>
+    <h2 class="ch-heading reveal">
+      <span data-lang="vi">Hơn nghìn năm: <em>từ đồng ruộng đến hoàng cung</em></span>
+      <span data-lang="en">More Than a Thousand Years: <em>from the paddyfields to the palace</em></span>
+    </h2>
+
+    <div class="ch-body reveal">
+      <div class="ch-prose">
+        <p data-lang="vi">Không ai biết chính xác múa rối nước ra đời từ khi nào. Người ta chỉ biết rằng khi tìm thấy bằng chứng đầu tiên, nó đã là một nghệ thuật hoàn chỉnh, tinh xảo đến mức đủ để diễn trước nhà vua.</p>
+        <p data-lang="en">Nobody knows with certainty when water puppetry first came into being. What is known is that when the earliest evidence was found, the art was already complete, refined to a level fit to perform before a king.</p>
+
+        <p data-lang="vi">Suốt hơn nghìn năm ấy, có một thứ không thay đổi: những người giữ nghề vẫn là nông dân. Không phải nghệ sĩ chuyên nghiệp với bằng cấp trường lớp. Là những người ban ngày ra đồng, chiều tối về sân đình, ngâm mình dưới nước lạnh để giật những sợi dây vì tình yêu với làng, với nghề của cha ông.</p>
+        <p data-lang="en">Across all those centuries, one thing has never changed: the keepers of this craft are farmers. Not trained professional artists with conservatory degrees. People who spend the day in the fields, come home at dusk to the communal yard, step into cold water and pull at strings because of a love for their village and for what their ancestors left behind.</p>
+      </div>
+
+      <div class="timeline reveal">
+        <div class="tl-item">
+          <div class="tl-year">
+            <span data-lang="vi">Trước TK X</span>
+            <span data-lang="en">Pre-10th c.</span>
+          </div>
+          <div class="tl-text">
+            <strong data-lang="vi">Nguồn gốc dân gian</strong>
+            <strong data-lang="en">Folk origins</strong>
+            <span data-lang="vi">Các nhà nghiên cứu tin múa rối nước đã tồn tại từ trước thời Lý, bắt nguồn từ những trò chơi của người nông dân vùng châu thổ sông Hồng trong mùa lũ.</span>
+            <span data-lang="en">Scholars believe water puppetry predates the Lý dynasty, originating in the flood-season games of farmers across the Red River Delta.</span>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">1121</div>
+          <div class="tl-text">
+            <strong data-lang="vi">Bia Sùng Thiện Diên Linh</strong>
+            <strong data-lang="en">Sùng Thiện Diên Linh Stele</strong>
+            <span data-lang="vi">Bằng chứng thành văn đầu tiên còn lưu lại: tấm bia đá tại chùa Long Đọi, Hà Nam, khắc lại cảnh rối nước được diễn mừng thọ vua Lý Nhân Tông.</span>
+            <span data-lang="en">The earliest surviving written record: a stone stele at Long Đọi Pagoda, Hà Nam, carved with a scene of water puppetry performed to celebrate King Lý Nhân Tông's birthday.</span>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">
+            <span data-lang="vi">Thời Trần</span>
+            <span data-lang="en">Trần Dynasty</span>
+          </div>
+          <div class="tl-text">
+            <strong data-lang="vi">Từ ao làng lên sân rồng</strong>
+            <strong data-lang="en">From village pond to royal court</strong>
+            <span data-lang="vi">Rối nước không chỉ là nghệ thuật dân gian. Nó được dùng trong cung đình để tiếp đón sứ thần nước ngoài.</span>
+            <span data-lang="en">Water puppetry was no longer solely folk art. It was employed at court to receive foreign envoys, a mark of its prestige.</span>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">
+            <span data-lang="vi">Hậu Lê, Nguyễn</span>
+            <span data-lang="en">Lê–Nguyễn era</span>
+          </div>
+          <div class="tl-text">
+            <strong data-lang="vi">Trở về với dân gian</strong>
+            <strong data-lang="en">A return to the people</strong>
+            <span data-lang="vi">Rời khỏi cung đình, rối nước trở lại với dân gian. Các phường rối hình thành, mỗi phường giữ bí quyết riêng, không truyền ra ngoài.</span>
+            <span data-lang="en">Departing the court, water puppetry returned to its people. Regional troupes formed, each guarding their own secrets, passing nothing in writing to anyone outside.</span>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">1945–54</div>
+          <div class="tl-text">
+            <strong data-lang="vi">Kháng chiến</strong>
+            <strong data-lang="en">The resistance years</strong>
+            <span data-lang="vi">Nghệ nhân bị bắt giết. Hiện vật bị phá hủy. Rối nước đứng trước nguy cơ thất truyền hoàn toàn.</span>
+            <span data-lang="en">Artisans were captured and killed. Objects were destroyed. Water puppetry came perilously close to being lost entirely.</span>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">1956</div>
+          <div class="tl-text">
+            <strong data-lang="vi">Hồi sinh</strong>
+            <strong data-lang="en">Revival</strong>
+            <span data-lang="vi">Theo chỉ thị của Chủ tịch Hồ Chí Minh, nghệ thuật sân khấu rối chuyên nghiệp Việt Nam chính thức ra đời.</span>
+            <span data-lang="en">On the directive of President Hồ Chí Minh, Vietnam's professional puppet theatre was formally established. A resurrection.</span>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">1979</div>
+          <div class="tl-text">
+            <strong data-lang="vi">Ra thế giới</strong>
+            <strong data-lang="en">Going international</strong>
+            <span data-lang="vi">Liên hoan Rối Quốc tế tại Ba Lan: lần đầu tiên rối nước Việt Nam được giới thiệu với bạn bè năm châu.</span>
+            <span data-lang="en">At the International Puppet Festival in Poland, Vietnamese water puppetry was introduced to the world for the first time, to widespread admiration.</span>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">
+            <span data-lang="vi">Hiện tại</span>
+            <span data-lang="en">Today</span>
+          </div>
+          <div class="tl-text">
+            <strong data-lang="vi">Chỉ còn 18 phường nghiệp dư</strong>
+            <strong data-lang="en">Only 18 amateur troupes remain</strong>
+            <span data-lang="vi">Tại 6 tỉnh vùng châu thổ sông Hồng. Câu hỏi bảo tồn ngày càng trở nên cấp thiết.</span>
+            <span data-lang="en">Spread across six provinces of the Red River Delta. The question of preservation grows more urgent by the year.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================================
+     CHAPTER 3
+============================================= -->
+<section class="chapter" id="ch3">
+  <div class="chapter-inner">
+    <p class="ch-label">
+      <span data-lang="vi">Chương ba</span>
+      <span data-lang="en">Chapter Three</span>
+    </p>
+    <h2 class="ch-heading reveal">
+      <span data-lang="vi">Con rối, <em>linh hồn được chạm khắc từ gỗ sung</em></span>
+      <span data-lang="en">The Puppet, <em>a Soul Carved from Sung Wood</em></span>
+    </h2>
+
+    <div class="ch-body reveal">
+      <div class="ch-prose">
+        <p class="dropcap" data-lang="vi">Người ta chọn gỗ sung, không phải ngẫu nhiên. Gỗ sung nhẹ, chống thấm nước, chịu được ngâm lâu dưới hồ. Nhưng còn hơn thế: "sung" trong tiếng Việt là ước vọng về một cuộc sống sung túc, đủ đầy. Mỗi con rối ngay từ khi chọn chất liệu đã mang trong mình một điều ước.</p>
+        <p class="dropcap" data-lang="en">The choice of sung wood is no accident. Sung wood is light, water-resistant, able to withstand long immersion. But there is more to it than that: "sung" in Vietnamese carries the wish for a life of abundance and fullness. From the very moment of choosing its material, every puppet already holds a wish inside it.</p>
+
+        <p data-lang="vi">Đặc biệt nhất là phần bên trong con rối, cái mà các nghệ nhân gọi là "máy". Đó là hệ thống dây, sào, khớp nối phức tạp được giấu bên dưới mặt nước, cho phép con rối cúi đầu, vẫy tay, thậm chí phun lửa hay đẻ trứng ngay trên mặt hồ. Mỗi phường có một cách làm "máy" riêng, được truyền miệng từ đời này sang đời khác, không bao giờ viết ra giấy, không bao giờ tiết lộ cho người ngoài.</p>
+        <p data-lang="en">Most remarkable is what lies inside the puppet, what the artisans call the "máy," the machine. It is a complex system of rods, wires, and joints hidden beneath the waterline, enabling the puppet to bow, wave, breathe fire, or lay an egg upon the surface of the lake. Each troupe makes their máy differently, passing the knowledge by word of mouth across generations, never committing it to paper, never revealing it to an outsider.</p>
+
+        <div class="pullquote reveal">
+          <span data-lang="vi">"Không có khái niệm hỏng. Không có gì là bỏ đi. Mỗi con rối, mỗi nhân vật đều mang một linh hồn."</span>
+          <span data-lang="en">"There is no such thing as broken. Nothing is ever discarded. Every puppet, every character, carries a soul."</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="media-placeholder scan reveal" aria-label="3D scan placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.27 6.96 12 12.01l8.73-5.05M12 22.08V12"/></svg>
+          <p class="ph-type">3D Scan · Scaniverse</p>
+          <p class="ph-desc" data-lang="vi">Bộ con rối, Phường Đào Thục · Khám phá cấu trúc bên trong và lớp sơn ta truyền thống.</p>
+          <p class="ph-desc" data-lang="en">Puppet Collection, Đào Thục Troupe · Explore the internal structure and traditional lacquer layers.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="ornament reveal">· · ·</div>
+
+    <p class="ch-label reveal">
+      <span data-lang="vi">Quy trình chế tác</span>
+      <span data-lang="en">The Craft Process</span>
+    </p>
+
+    <div class="process-steps reveal">
+      <div class="process-step">
+        <div class="step-num">01</div>
+        <div class="step-title" data-lang="vi">Chọn và xử lý gỗ sung</div>
+        <div class="step-title" data-lang="en">Select &amp; treat sung wood</div>
+        <p class="step-desc" data-lang="vi">Gỗ sung được chọn theo tuổi cây và độ thẳng thớ. Phơi khô tự nhiên nhiều tháng trước khi chạm khắc.</p>
+        <p class="step-desc" data-lang="en">Sung wood is selected for age and grain. It is air-dried for months before carving may begin.</p>
+      </div>
+      <div class="process-step">
+        <div class="step-num">02</div>
+        <div class="step-title" data-lang="vi">Phá hình bằng rìu</div>
+        <div class="step-title" data-lang="en">Rough form with an axe</div>
+        <p class="step-desc" data-lang="vi">Rìu phá hình thô, xác định tỉ lệ tổng thể của nhân vật trước khi dùng đục tinh.</p>
+        <p class="step-desc" data-lang="en">An axe establishes the rough form and overall proportions of the figure before finer tools are used.</p>
+      </div>
+      <div class="process-step">
+        <div class="step-num">03</div>
+        <div class="step-title" data-lang="vi">Đục tạo dáng chi tiết</div>
+        <div class="step-title" data-lang="en">Chisel the fine details</div>
+        <p class="step-desc" data-lang="vi">Đục và giấy nhám tạo nên từng đường nét khuôn mặt, trang phục và biểu cảm đặc trưng của nhân vật.</p>
+        <p class="step-desc" data-lang="en">Chisels and sandpaper shape each feature of the face, costume, and the character's distinctive expression.</p>
+      </div>
+      <div class="process-step">
+        <div class="step-num">04</div>
+        <div class="step-title" data-lang="vi">Lắp "máy" điều khiển</div>
+        <div class="step-title" data-lang="en">Install the "máy" mechanism</div>
+        <p class="step-desc" data-lang="vi">Hệ thống dây và sào được lắp bên trong, bí quyết riêng của từng phường, không bao giờ tiết lộ.</p>
+        <p class="step-desc" data-lang="en">The rod-and-wire system is fitted inside the puppet. Each troupe's method is their own secret, never disclosed.</p>
+      </div>
+      <div class="process-step">
+        <div class="step-num">05</div>
+        <div class="step-title" data-lang="vi">Sơn ta nhiều lớp</div>
+        <div class="step-title" data-lang="en">Apply lacquer in layers</div>
+        <p class="step-desc" data-lang="vi">Sơn ta quét đi quét lại nhiều lần, mỗi lớp chờ khô hoàn toàn. Một con rối hoàn chỉnh mất vài tuần đến vài tháng.</p>
+        <p class="step-desc" data-lang="en">Traditional lacquer is applied coat by coat, each layer allowed to dry completely. A finished puppet takes weeks to months.</p>
+      </div>
+      <div class="process-step">
+        <div class="step-num">06</div>
+        <div class="step-title" data-lang="vi">Thử nước &amp; chỉnh khớp</div>
+        <div class="step-title" data-lang="en">Water testing &amp; adjustment</div>
+        <p class="step-desc" data-lang="vi">Con rối được thả vào nước lần đầu. Khớp nối được chỉnh cho đến khi mọi cử động trở nên tự nhiên.</p>
+        <p class="step-desc" data-lang="en">The puppet meets water for the first time. Joints are adjusted until every movement flows as it should.</p>
+      </div>
+    </div>
+
+    <div class="media-placeholder photo-grid reveal" style="margin-top:2.5rem" aria-label="Photo essay placeholder">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" style="width:36px;height:36px;opacity:0.35;color:var(--timber)"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+      <p class="ph-type" data-lang="vi">Ảnh tư liệu: Quy trình chế tác · Phường Đào Thục</p>
+      <p class="ph-type" data-lang="en">Photo Documentary: The Craft Process · Đào Thục Troupe</p>
+      <p class="ph-desc" data-lang="vi">Bộ ảnh ghi lại từng công đoạn, từ khúc gỗ sung thô đến con rối hoàn chỉnh lần đầu chạm mặt nước.</p>
+      <p class="ph-desc" data-lang="en">A photo essay recording each stage, from a rough block of sung wood to a completed puppet touching the water for the first time.</p>
+    </div>
+  </div>
+</section>
+
+<!-- =============================================
+     CHAPTER 4
+============================================= -->
+<section class="chapter" id="ch4">
+  <div class="chapter-inner">
+    <p class="ch-label">
+      <span data-lang="vi">Chương bốn</span>
+      <span data-lang="en">Chapter Four</span>
+    </p>
+    <h2 class="ch-heading reveal">
+      <span data-lang="vi">Người giữ lửa: <em>hai làng, hai giọng kể</em></span>
+      <span data-lang="en">Keepers of the Flame: <em>two villages, two voices</em></span>
+    </h2>
+
+    <div class="ch-body single reveal">
+      <div class="ch-prose">
+        <p data-lang="vi">Đào Thục và Bắc Ninh, hai vùng đất cách nhau chừng trăm cây số, nhưng đều giữ trong mình cùng một di sản. Cùng một nghề. Nhưng mỗi nơi lại có một cách kể khác nhau về nó.</p>
+        <p data-lang="en">Đào Thục and Bắc Ninh lie roughly a hundred kilometres apart, yet both hold the same inheritance within them. The same craft. And yet each tells its story in a different voice.</p>
+        <p data-lang="vi">Chúng tôi đến gặp hai nghệ nhân để nghe họ kể câu chuyện của mình. Không phải câu chuyện được viết trong sách. Mà là câu chuyện được giữ trong ký ức, trong những đôi bàn tay chai sần, trong những đêm ngâm mình dưới nước lạnh mà vẫn không bỏ nghề.</p>
+        <p data-lang="en">We came to listen to two artisans tell their own stories. Not the stories that appear in books. The stories held in memory, in calloused hands, in nights spent standing in cold water and choosing not to leave.</p>
+      </div>
+    </div>
+
+    <div class="artisan-grid reveal">
+      <div class="artisan-card">
+        <div class="artisan-name" data-lang="vi">Nghệ nhân · Làng Đào Thục</div>
+        <div class="artisan-name" data-lang="en">Artisan · Đào Thục Village</div>
+        <div class="artisan-region">Đông Anh, Hà Nội</div>
+        <p class="artisan-desc" data-lang="vi">Phường rối hơn 300 năm tuổi. Nghề cha truyền con nối. Gắn với lễ hội làng và thủy đình cổ giữa ao.</p>
+        <p class="artisan-desc" data-lang="en">A troupe over three hundred years old. The craft passed from parent to child. Bound to the village festival and the ancient water pavilion rising from the pond.</p>
+        <div class="artisan-quote">
+          <span data-lang="vi">[Lời kể của nghệ nhân sẽ được đặt tại đây, giữ nguyên giọng mộc mạc và đặc ngữ địa phương.]</span>
+          <span data-lang="en">[The artisan's account will be placed here, preserving the plainspoken voice and regional cadence of the original.]</span>
+        </div>
+        <p class="location-tag" data-lang="vi">Đào Thục, Đông Anh, Hà Nội · Ghi âm tháng __, 20__</p>
+        <p class="location-tag" data-lang="en">Đào Thục, Đông Anh, Hà Nội · Recorded month __, 20__</p>
+        <div class="artisan-media">
+          <div class="media-placeholder audio reveal">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" style="width:28px;height:28px;flex-shrink:0;opacity:0.4;color:var(--timber)"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+            <div>
+              <p class="ph-type" data-lang="vi">Ghi âm phỏng vấn · Đào Thục</p>
+              <p class="ph-type" data-lang="en">Interview Recording · Đào Thục</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="artisan-card">
+        <div class="artisan-name" data-lang="vi">Nghệ nhân · Bắc Ninh</div>
+        <div class="artisan-name" data-lang="en">Artisan · Bắc Ninh Province</div>
+        <div class="artisan-region">Vùng Kinh Bắc</div>
+        <p class="artisan-desc" data-lang="vi">Rối nước gắn với quan họ và lễ hội vùng Kinh Bắc. Một phong cách khác, nhẹ nhàng hơn, thơ hơn.</p>
+        <p class="artisan-desc" data-lang="en">Water puppetry here is woven together with quan họ folk singing and the spring festivals of the Kinh Bắc region. A different register: gentler, more lyrical.</p>
+        <div class="artisan-quote">
+          <span data-lang="vi">[Lời kể của nghệ nhân Bắc Ninh sẽ được đặt tại đây, để hai giọng kể tự nhiên đối thoại với nhau.]</span>
+          <span data-lang="en">[The Bắc Ninh artisan's account will be placed here, allowing the two voices to speak to each other across the distance between them.]</span>
+        </div>
+        <p class="location-tag" data-lang="vi">Bắc Ninh · Ghi âm tháng __, 20__</p>
+        <p class="location-tag" data-lang="en">Bắc Ninh · Recorded month __, 20__</p>
+        <div class="artisan-media">
+          <div class="media-placeholder audio reveal">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" style="width:28px;height:28px;flex-shrink:0;opacity:0.4;color:var(--timber)"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+            <div>
+              <p class="ph-type" data-lang="vi">Ghi âm phỏng vấn · Bắc Ninh</p>
+              <p class="ph-type" data-lang="en">Interview Recording · Bắc Ninh</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================================
+     CHAPTER 5
+============================================= -->
+<section class="chapter" id="ch5">
+  <div class="chapter-inner">
+    <p class="ch-label">
+      <span data-lang="vi">Chương năm</span>
+      <span data-lang="en">Chapter Five</span>
+    </p>
+    <h2 class="ch-heading reveal">
+      <span data-lang="vi">Thủy đình: <em>ngôi nhà của bí ẩn</em></span>
+      <span data-lang="en">The Water Pavilion: <em>a house of mysteries</em></span>
+    </h2>
+
+    <div class="ch-body reveal">
+      <div class="ch-prose">
+        <p class="dropcap" data-lang="vi">"Thuỷ" là nước. "Đình" là đình làng. Ghép lại thành thủy đình, một ngôi đình dựng giữa ao, mái ngói đỏ cong cong phản chiếu xuống mặt hồ, nơi những người nghệ nhân đứng sau bức rèm tre mà điều khiển cả một thế giới trước mắt khán giả.</p>
+        <p class="dropcap" data-lang="en">"Thủy" is water. "Đình" is the communal village hall. Together they form thủy đình: a pavilion built at the centre of a pond, its curved red-tiled roof reflected in the surface below, where artisans stand behind a bamboo curtain and govern an entire world in front of the audience.</p>
+
+        <p data-lang="vi">Thủy đình không chỉ là sân khấu. Nó là không gian thiêng. Nơi làng xã tụ họp. Nơi người sống và người đã khuất cùng xem một vở diễn. Nơi tiếng trống chầu ngân lên là cả làng biết, tối nay có rối.</p>
+        <p data-lang="en">The thủy đình is not simply a stage. It is sacred space. A place where the village gathers. Where the living and those who have passed look on at the same performance together. Where the sound of the chầu drum means the whole village knows: tonight there will be puppetry.</p>
+
+        <div class="pullquote reveal">
+          <span data-lang="vi">"Nhìn từ xa, thủy đình như ngôi nhà nổi trên mặt nước. Nhìn gần, đó là nơi ẩn giấu mọi bí ẩn của nghề."</span>
+          <span data-lang="en">"Seen from a distance, the thủy đình looks like a house floating on the water. Seen up close, it is the place where every secret of the craft is kept."</span>
+        </div>
+
+        <p data-lang="vi">Trong các nhà hát hiện đại giữa lòng thành phố, thủy đình được tái hiện với ánh đèn vàng rọi xuống mặt nước, khói huyền ảo bốc lên, sơn của những con rối lấp lánh phản chiếu. Cái nên thơ tự nhiên bị thay bằng ánh sáng nhân tạo, nhưng lạ thay, cái kỳ diệu vẫn còn đó.</p>
+        <p data-lang="en">In the modern theatres at the heart of cities, the thủy đình is recreated with golden light falling on the water, smoke drifting upward in haze, the lacquer of the puppets shimmering in reflection. The natural poetry has been exchanged for artificial light, yet the mystery, somehow, remains.</p>
+      </div>
+
+      <div>
+        <div class="media-placeholder photo-single reveal" aria-label="Photo placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" style="width:36px;height:36px;opacity:0.35;color:var(--timber)"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+          <p class="ph-type" data-lang="vi">Ảnh tư liệu: Thủy đình làng Đào Thục</p>
+          <p class="ph-type" data-lang="en">Photo Documentary: Đào Thục Village Water Pavilion</p>
+          <p class="ph-desc" data-lang="vi">Hình ảnh thủy đình trong buổi biểu diễn, ánh lửa pháo phản chiếu mặt hồ, khán giả quây tròn xung quanh.</p>
+          <p class="ph-desc" data-lang="en">The pavilion during performance, firelight from fireworks reflected in the pond, the audience gathered all around.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================================
+     CHAPTER 6
+============================================= -->
+<section class="chapter" id="ch6">
+  <div class="chapter-inner">
+    <p class="ch-label">
+      <span data-lang="vi">Chương sáu</span>
+      <span data-lang="en">Chapter Six</span>
+    </p>
+    <h2 class="ch-heading reveal">
+      <span data-lang="vi">Sau bức rèm: <em>những bàn tay và nỗi khổ luyện</em></span>
+      <span data-lang="en">Behind the Curtain: <em>the hands and the long suffering of practice</em></span>
+    </h2>
+
+    <div class="ch-body reveal">
+      <div class="ch-prose">
+        <p data-lang="vi">Sau những tràng pháo tay trầm trồ, sau ánh đèn tắt và khói tan, những người nghệ nhân bước ra khỏi bức rèm ướt sũng, tay tê cứng vì lạnh, lưng đau vì đứng cong người dưới nước hàng tiếng đồng hồ. Khán giả chỉ thấy những con rối lung linh. Họ không thấy điều đó.</p>
+        <p data-lang="en">After the applause fades, after the lights go out and the smoke disperses, the artisans step out from behind the soaked curtain with hands stiff from cold and backs aching from hours bent beneath the waterline. The audience saw only shimmering puppets. They did not see this.</p>
+
+        <p data-lang="vi">Để điều khiển một con rối nước, người nghệ nhân phải học múa, học hát, học diễn bằng cơ thể chính mình trước, rồi mới truyền cảm xúc đó qua đầu ngón tay sang sợi dây, sang con rối. Nếu người điều khiển không cảm nhận được nhịp điệu của bài nhạc, con rối sẽ chết cứng trên mặt nước dù tay có khéo đến đâu.</p>
+        <p data-lang="en">To control a water puppet, the artisan must first learn to dance, to sing, to perform with their own body, and only then transmit that feeling through their fingertips, along the rod, into the puppet. If the handler cannot feel the rhythm of the music, the puppet will go stiff and lifeless on the water no matter how skilled the hands.</p>
+
+        <div class="pullquote reveal">
+          <span data-lang="vi">"Diễn viên múa rối phải tập luyện với hơn 100% công suất, vì họ phải chạm đến trái tim khán giả qua một trung gian là con rối. Khoảng cách đó đòi hỏi gấp đôi cảm xúc."</span>
+          <span data-lang="en">"A puppet performer must train beyond full capacity, because they must reach the audience's heart through a mediator: the puppet. That distance demands twice the feeling."</span>
+        </div>
+
+        <p data-lang="vi">Mùa đông, nhiệt độ xuống thấp vài độ, họ vẫn ngâm mình trong bể nước. Dán miếng giữ nhiệt. Mặc nhiều lớp tất. Uống nước mắm cho ấm người. Và tiếp tục diễn.</p>
+        <p data-lang="en">In winter, when the temperature drops to a few degrees, they still step into the water. They use heat patches. They wear multiple layers of socks. They drink fish sauce to warm from the inside. And then they perform.</p>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:1.5rem;">
+        <div class="media-placeholder video reveal" aria-label="Video placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" style="width:36px;height:36px;opacity:0.35;color:var(--timber)"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+          <p class="ph-type" data-lang="vi">Video: Hậu trường · Nghệ nhân điều khiển rối dưới nước</p>
+          <p class="ph-type" data-lang="en">Video: Backstage · Artisans controlling puppets underwater</p>
+          <p class="ph-desc" data-lang="vi">Góc nhìn hiếm thấy từ phía sau bức rèm, nơi những bàn tay vô hình tạo ra điều kỳ diệu.</p>
+          <p class="ph-desc" data-lang="en">A rare perspective from behind the curtain, where invisible hands create the miraculous.</p>
+        </div>
+        <div class="media-placeholder video reveal" aria-label="Video placeholder 2">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" style="width:36px;height:36px;opacity:0.35;color:var(--timber)"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+          <p class="ph-type" data-lang="vi">Video: Buổi biểu diễn · Phường Đào Thục</p>
+          <p class="ph-type" data-lang="en">Video: Full Performance · Đào Thục Troupe</p>
+          <p class="ph-desc" data-lang="vi">Buổi diễn đầy đủ tại thủy đình làng Đào Thục, ghi lại trong chuyến điền dã.</p>
+          <p class="ph-desc" data-lang="en">A full performance at the Đào Thục village water pavilion, recorded during fieldwork.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================================
+     CHAPTER 7
+============================================= -->
+<section class="chapter" id="ch7">
+  <div class="chapter-inner">
+    <p class="ch-label">
+      <span data-lang="vi">Chương bảy</span>
+      <span data-lang="en">Chapter Seven</span>
+    </p>
+    <h2 class="ch-heading reveal">
+      <span data-lang="vi">Tiếng trống chầu <em>và những câu chuyện làng quê</em></span>
+      <span data-lang="en">The Drum That Opens the World: <em>and the stories of the village</em></span>
+    </h2>
+
+    <div class="ch-body reveal">
+      <div class="ch-prose">
+        <p class="dropcap" data-lang="vi">Một buổi diễn rối nước không bắt đầu bằng con rối, mà bằng âm nhạc. Tiếng trống chầu, tiếng mõ, sáo trúc, tù và, tất cả vang lên trước khi bất cứ con rối nào xuất hiện, như lời mời gọi khán giả bước vào một thế giới khác.</p>
+        <p class="dropcap" data-lang="en">A water puppetry performance does not begin with a puppet. It begins with music. The chầu drum, the wooden clapper, the bamboo flute, the horn: all of them sound before a single puppet appears, like an invitation to step through into another world.</p>
+
+        <p data-lang="vi">Và xuất hiện đầu tiên bao giờ cũng là chú Tễu, bụng tròn, miệng cười toe, vừa đi vừa hát, vừa giáo đầu vừa kể chuyện. Tễu không phải nhân vật chính. Tễu là người dẫn đường, người kết nối sân khấu với khán giả, người nói những điều mà vua quan không được phép nói, người cười vào những điều mà cuộc sống buộc người ta phải im lặng.</p>
+        <p data-lang="en">And it is always Tễu who appears first: round-bellied, wide-grinning, walking and singing at the same time, opening the show and telling stories all at once. Tễu is not the main character. Tễu is the guide, the bridge between stage and audience, the one permitted to say what lords and officials may not, the one who laughs at the things that life requires people to endure in silence.</p>
+
+        <div class="pullquote reveal">
+          <span data-lang="vi">"Chú Tễu là người duy nhất trong vở rối được cười vào mặt vua. Đó là một thứ tự do rất Việt Nam."</span>
+          <span data-lang="en">"Tễu is the only character in the puppet play permitted to laugh in the king's face. That is a very Vietnamese kind of freedom."</span>
+        </div>
+
+        <p data-lang="vi">Theo sau Tễu là cả một thế giới thu nhỏ của làng quê Bắc Bộ: người nông dân đi cày, trẻ em chăn trâu, ngư ông thả lưới, những cô gái cấy lúa trong tiếng hát. Rồi những lễ hội: đua thuyền, chọi trâu, đấu vật, múa lân. Rồi những câu chuyện lịch sử: Bà Trưng, Bà Triệu, Vua Lê Lợi trả gươm cho rùa thần giữa hồ Gươm sóng sánh.</p>
+        <p data-lang="en">Behind Tễu comes an entire miniature world of the northern Vietnamese village: a farmer ploughing, children herding buffalo, a fisherman casting his net, girls planting rice to the sound of song. Then the festivals: boat racing, buffalo fighting, wrestling, lion dancing. Then the stories of history: the Trưng Sisters, Lady Triệu, King Lê Lợi returning his sword to the sacred turtle in the shimmering waters of Hoàn Kiếm Lake.</p>
+
+        <p data-lang="vi">Mỗi tiết mục kể một mảnh đời. Ghép lại, đó là bức tranh đầy đủ nhất về người Việt, không phải người Việt trong sử sách, mà người Việt thật sự: cần cù, hóm hỉnh, yêu đời, và luôn ước mơ về một mùa gặt bội thu.</p>
+        <p data-lang="en">Each scene tells one fragment of a life. Together they form the most complete portrait of the Vietnamese people that exists: not the Vietnamese of the history books, but the Vietnamese as they truly are: hardworking, wry, in love with living, and always dreaming of a plentiful harvest.</p>
+      </div>
+
+      <div>
+        <div class="media-placeholder audio reveal" style="min-height:110px;flex-direction:column;align-items:flex-start;padding:1.5rem;" aria-label="Audio placeholder">
+          <div style="display:flex;align-items:center;gap:1rem;width:100%">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" style="width:32px;height:32px;flex-shrink:0;opacity:0.4;color:var(--timber)"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+            <div>
+              <p class="ph-type" data-lang="vi">Âm thanh: Tiếng trống chầu mở màn · Phường Đào Thục</p>
+              <p class="ph-type" data-lang="en">Audio: The Opening Chầu Drum · Đào Thục Troupe</p>
+              <p class="ph-desc" data-lang="vi">Nhúng clip âm thanh tại đây để người đọc nghe tiếng nhạc trong khi đọc bài.</p>
+              <p class="ph-desc" data-lang="en">Embed audio here so the reader may listen while reading, an immersive experience.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================================
+     CLOSING
+============================================= -->
+<section id="closing">
+  <div class="closing-inner">
+    <p class="closing-label" data-lang="vi">Lời kết</p>
+    <p class="closing-label" data-lang="en">Closing</p>
+
+    <h2 class="closing-title">
+      <span data-lang="vi">Bàn tay <em>tiếp theo</em></span>
+      <span data-lang="en">The Next <em>Hands</em></span>
+    </h2>
+
+    <p class="closing-body" data-lang="vi">Hơn nghìn năm. Qua lũ lụt và chiến tranh, qua những thời kỳ bị coi thường và những thời kỳ được tôn vinh, múa rối nước vẫn sống. Không phải vì được bảo tồn trong bảo tàng. Mà vì luôn có những người nông dân bình thường quyết định ngâm mình dưới nước lạnh, giật những sợi dây, và giữ cho những con rối gỗ sung tiếp tục sống.</p>
+    <p class="closing-body" data-lang="en">More than a thousand years. Through floods and wars, through eras of neglect and eras of celebration, water puppetry has survived. Not because it was preserved in a museum. But because there were always ordinary farmers who decided to step into the cold water, pull at the strings, and keep the sung-wood puppets living.</p>
+
+    <p class="stat-callout" data-lang="vi">Chỉ còn 18 phường rối nghiệp dư tại 6 tỉnh vùng châu thổ sông Hồng.</p>
+    <p class="stat-callout" data-lang="en">Only 18 amateur troupes remain, across 6 provinces of the Red River Delta.</p>
+
+    <p class="closing-body" data-lang="vi">Con số ấy đang tiếp tục thu hẹp, trong khi lớp trẻ ngày càng xa lạ với âm thanh trống chầu và mái thủy đình. Câu hỏi không phải là múa rối nước có đẹp không. Câu hỏi là: ai sẽ là người tiếp theo đứng sau bức rèm ướt đó, trong bóng tối, điều khiển những sợi dây mà khán giả không bao giờ nhìn thấy?</p>
+    <p class="closing-body" data-lang="en">That number keeps shrinking, while each generation grows a little more unfamiliar with the sound of the chầu drum and the shape of a water pavilion's roof. The question is not whether water puppetry is beautiful. The question is: who will be the next person to stand behind that wet curtain, in the dark, pulling the strings the audience will never see?</p>
+
+    <p class="closing-final" data-lang="vi">Mỗi đêm diễn kết thúc, các con rối lại trở về dưới nước. Trong bóng tối dưới mặt hồ, chúng vẫn còn đó, chờ bàn tay người nghệ nhân kéo sợi dây lên lần nữa.</p>
+    <p class="closing-final" data-lang="en">When each night's performance ends, the puppets return beneath the water. In the dark below the surface of the lake, they are still there, waiting for the artisan's hand to lift the string once more.</p>
+  </div>
+</section>
+
+<!-- =============================================
+     SCRIPTS
+============================================= -->
+<script>
+  // ---- Language Toggle ----
+  function setLang(lang) {
+    document.body.classList.toggle('lang-en', lang === 'en');
+    document.getElementById('btn-vi').classList.toggle('active', lang === 'vi');
+    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+    document.documentElement.lang = lang;
+    localStorage.setItem('roi-nuoc-lang', lang);
+  }
+
+  (function() {
+    const saved = localStorage.getItem('roi-nuoc-lang');
+    if (saved === 'en') setLang('en');
+  })();
+
+  // ---- Scroll Reveal ----
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // ---- Active Chapter Nav ----
+  const sections = document.querySelectorAll('.chapter, #closing');
+  const navLinks = document.querySelectorAll('#chapter-nav a');
+
+  const navObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id;
+        navLinks.forEach(a => {
+          a.classList.toggle('active', a.getAttribute('href') === `#${id}`);
+        });
+      }
+    });
+  }, { threshold: 0.3 });
+
+  sections.forEach(s => navObserver.observe(s));
+
+  // ---- Water Ripple Canvas ----
+  const canvas = document.getElementById('hero-canvas');
+  const ctx = canvas.getContext('2d');
+  let ripples = [];
+  let raf;
+
+  function resize() {
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+  }
+
+  function spawnRipple() {
+    ripples.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: 0,
+      maxR: 80 + Math.random() * 120,
+      speed: 0.5 + Math.random() * 0.8,
+      alpha: 0.5
+    });
+  }
+
+  function drawRipples() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ripples = ripples.filter(rp => rp.alpha > 0.01);
+
+    ripples.forEach(rp => {
+      rp.r += rp.speed;
+      rp.alpha = (1 - rp.r / rp.maxR) * 0.5;
+      ctx.beginPath();
+      ctx.arc(rp.x, rp.y, rp.r, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(139, 26, 26, ${rp.alpha})`;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    });
+
+    raf = requestAnimationFrame(drawRipples);
+  }
+
+  resize();
+  window.addEventListener('resize', resize);
+
+  setInterval(spawnRipple, 900);
+  spawnRipple(); spawnRipple(); spawnRipple();
+  drawRipples();
+</script>
+</body>
+</html>
