@@ -655,10 +655,14 @@
   [data-lang="en"] { display: none; }
   body.lang-en [data-lang="vi"] { display: none; }
   body.lang-en [data-lang="en"] { display: block; }
-  /* for inline elements */
+  /* inline elements */
   body.lang-en span[data-lang="vi"] { display: none; }
   body.lang-en span[data-lang="en"] { display: inline; }
   span[data-lang="en"] { display: none; }
+  /* nav links specifically */
+  #chapter-nav a[data-lang="en"] { display: none; }
+  body.lang-en #chapter-nav a[data-lang="vi"] { display: none; }
+  body.lang-en #chapter-nav a[data-lang="en"] { display: block; }
 
   /* =============================================
      RESPONSIVE
